@@ -1,4 +1,4 @@
-const { existPath, isItAbsolute, toAbsolute } = require('../functions.js');
+const { existPath, isItAbsolute, toAbsolute, isItFile, isItMd} = require('../functions.js');
 
 describe('existPath', () => {
     it('debería retornar false para una ruta no existente', () => {
@@ -29,5 +29,23 @@ describe('isItAbsolute', () => {
 describe('toAbsolute', () => {
   it('debería retornar D:\Laboratoria\DEV003-md-links\README.md', () => {
     expect(toAbsolute('README.md')).toEqual('D:\\Laboratoria\\DEV003-md-links\\README.md');
+  });
+});
+
+describe('isItFile', () => {
+  it('debería retornar true para un "archivo"', () => {
+  expect(isItFile('README.md')).toBe(true);
+  });
+  it('debería retornar false para un "directorio"', () => {
+  expect(isItFile('readme-content')).toBe(false);
+  });
+});
+
+describe('isItMd', () => {
+  it('debería retornar true para un archivo de formato .md', () => {
+    expect(isItMd('README.md')).toBe(true);
+  });
+  it('debería retornar false para un archivo de otro formato', () => {
+    expect(isItMd('index.js')).toBe(false);
   });
 });

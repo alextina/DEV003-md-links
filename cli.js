@@ -1,7 +1,9 @@
 const { mdLinks } = require('./index.js');
-mdLinks('/noexiste/')
-.then (() => {
-    
+const path = process.argv[2];
+
+mdLinks(path)
+.then ((resolve) => {
+    console.log(resolve);
 })
 .catch ((error) => {
     console.log(error);

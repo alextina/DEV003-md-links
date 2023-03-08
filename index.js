@@ -1,6 +1,4 @@
 const fs = require('fs');
-const MarkdownIt = require('markdown-it');
-// const md = new MarkdownIt();
 // const [, , path] = process.argv;
 // console.log(path);
 
@@ -20,11 +18,6 @@ const mdLinks = (path, options) => { // resolve & reject son callbascks que en a
   }
   })
 }
-
-mdLinks(process.argv[2], { option1: true, option2: false })
-  .then(links => console.log(process.argv[2]))
-  .catch(error => console.log(error));
-
 
 module.exports = {
   mdLinks

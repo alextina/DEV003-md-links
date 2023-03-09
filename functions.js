@@ -26,70 +26,28 @@ const isItFile = (myPath) => {
     return fs.statSync(myPath).isFile();
 }
 
-// ¿la ruta es un directorio?
-// const isItDirectory = (myPath) => {
-//     return fs.statSync(myPath).isDirectory();
-// }
-
-// La ruta es un archivo o directorio?
-// const fileOrDirectory = (myPath) => {
-//     if (fs.statSync(myPath).isFile()) {
-//         console.log(myPath, 'es archivo');
-//     } else {
-//         console.log(myPath, 'es directorio');
-//     };
-// }
-
 // Es un archivo .md
 const isItMd = (myPath) => {
     const extension = path.extname(myPath);
     return extension === '.md';
 }
 
-// //El directorio tiene archivos - versiones asíncronas
-// const haveFiles = (myPath) => {
-//     return fs.readdir(myPath, (err, files) => {
-//         if (err) {
-//         console.log(`Error al leer el directorio: ${err}`);
-//         } else {
-//         if (files.length === 0) {
-//             console.log(`El directorio ${myPath} está vacío`);
-//         } else {
-//             console.log(`El directorio ${myPath} contiene ${files.length} archivos`);
-//         }
-//         }
-//     });
-// }
-
-// const haveFiles = (myPath) => {
-//     fs.promises.readdir(myPath)
-//     .then((files) => {
-//         console.log(files);
-//         // if (files.length === 0) {
-//         //     console.log(`El directorio ${myPath} está vacío`);
-//         // } else {
-//         //     console.log(`El directorio ${myPath} contiene ${files.length} archivos`);
-//         // }
-//     })
-//     .catch((error) => {
-//         console.log(`Error al leer el directorio: ${error}`);
-//     })
-// }
-
-//El directorio tiene archivos (versión sincrona para leer archivos)
+// El directorio tiene archivos (versión sincrona para leer archivos)
 const haveFiles = (myPath) => {
-    if (fs.readdirSync(myPath).length > 0) {
+    if(fs.readdirSync(myPath).length > 0) {
         return true;
     } else {
         return false;
     }
 }
 
-console.log(haveFiles(myPath1));
+const readFiles = (myPath) => {
+    return fs.readdirSync(myPath)
+}
 
 // // Mostrando resultados
 // console.log('------------------------------------------------------------------- ¿La ruta existe?');
-// console.log(myPath0, existPath(myPath0)); // ejemplo.md false
+// console.log(myPath0, existPath(myPath0)); // noexiste.md false
 // console.log(myPath1, existPath(myPath1)); // D:/Laboratoria/DEV003-md-links/ true
 // console.log(myPath2, existPath(myPath2)); // README.md true
 
@@ -104,19 +62,16 @@ console.log(haveFiles(myPath1));
 // console.log(myPath1, isItFile(myPath1));
 // console.log(myPath2, isItFile(myPath2));
 
-// // console.log('---------------------------------------------------------------- ¿La ruta es un archivo o directorio?');
-// // fileOrDirectory(myPath1); // D:/Laboratoria/DEV003-md-links/ es directorio
-// // fileOrDirectory(myPath2); // README.md es archivo
-
 // console.log('------------------------------------------------------------------- ¿Es un archivo .md?');
 // console.log('README.md >>>', isItMd('README.md')); // true
 // console.log('index.js >>>', isItMd('index.js')); // false
 
 // console.log('------------------------------------------------------------------- ¿El directorio tiene archivos?');
-// haveFiles(myPath1) // El directorio D:/Laboratoria/DEV003-md-links/ contiene 14 archivos
-// haveFiles('sinarchivos') // El directorio sinarchivos está vacío
+// console.log(myPath1, '¿tiene archivos? >>>', haveFiles(myPath1));
+// console.log('cuántos y cuáles son? >>>', `son ${readFiles(myPath1).length}`, readFiles(myPath1));
 
 
 module.exports = {
-    existPath, isItAbsolute, toAbsolute, isItFile, isItMd
+    existPath, isItAbsolute, toAbsolute, isItFile, isItMd, haveFiles, readFiles
   };
+  

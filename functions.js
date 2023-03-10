@@ -45,7 +45,7 @@ const readFiles = (myPath) => {
     return fs.readdirSync(myPath)
 }
 
-// // Mostrando resultados
+// // Mostrando resultados node functions.js: D:\Laboratoria\DEV003-md-links\para-pruebas para-pruebas\con-links.md
 // console.log('------------------------------------------------------------------- ¿La ruta existe?');
 // console.log(myPath0, existPath(myPath0)); // noexiste.md false
 // console.log(myPath1, existPath(myPath1)); // D:/Laboratoria/DEV003-md-links/ true
@@ -68,8 +68,10 @@ const readFiles = (myPath) => {
 
 // console.log('------------------------------------------------------------------- ¿El directorio tiene archivos?');
 // console.log(myPath1, '¿tiene archivos? >>>', haveFiles(myPath1));
-// console.log('cuántos y cuáles son? >>>', `son ${readFiles(myPath1).length}`, readFiles(myPath1));
+// // console.log('cuántos y cuáles son? >>>', `son ${readFiles(myPath1).length}`, readFiles(myPath1));
 
+// console.log('------------------------------------------------------------------- ¿Qué archivos tiene el directorio?');
+// console.log(readFiles(myPath1));
 
 module.exports = {
     existPath, isItAbsolute, toAbsolute, isItFile, isItMd, haveFiles, readFiles

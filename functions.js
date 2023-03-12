@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { resolve } = require('path');
 const path = require('path');
 const myPath0 = 'noexiste.md' //
 const myPath1 = process.argv[2]; // absoluta: D:\Laboratoria\DEV003-md-links\
@@ -41,9 +42,78 @@ const haveFiles = (myPath) => {
     }
 }
 
-const readFiles = (myPath) => {
-    return fs.readdirSync(myPath)
+// Verifica si el directorio tiene archivos
+const readDirectory = (filePath) => {
+    return fs.readdirSync(filePath)
 }
+
+// obtiene los archivos md
+const getMdFiles = (directoryPath) => {
+    return readDirectory(directoryPath).filter(isItMd).map((filePath) => {
+        return path.join(directoryPath, filePath);
+    });
+}
+
+// const readMdFile = (myPath) => {
+// fs.readFile(myPath, 'utf8', (err, data) => {
+//   if (err) {
+//     console.log(err);    ;
+//   } else {
+//     console.log(data);
+//   }
+// });
+// }
+
+// console.log(readMdFile(myPath1));
+
+// Leyendo archivo Marckdown
+const readMdFile = (filePath) => {  
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, 'utf8', (error, data) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(data);
+            }
+        });
+    });
+};  
+
+// // console.log('------------------------------------------------------------------- ¿Leyendo archivo md');
+// readMdFile(myPath1)
+// .then(data => {
+//     console.log(data);
+// })
+// .catch(err => {
+//     console.error(err);
+// });
+
+// Extraer links
+const getLinks = (filePath) => {  
+    return new Promise((resolve, reject) => {
+        fs.readFile(filePath, 'utf8', (error, dataLinks) => {
+            if (error) {
+                reject(error);
+            } else {
+               const linkRegex = /\[([^\]]+)\]\((http[s]?:\/\/[^\)]+)\)/g;
+               const links = Array.from(dataLinks.matchAll(linkRegex), matchLink => ({
+                href: matchLink[2],
+                text: matchLink[1],
+                file: filePath,
+               }));
+               resolve(links);
+            }
+        });
+    });
+};
+
+// getLinks(myPath1)
+// .then(links => {
+//     console.log(links);
+// })
+// .catch(error => {
+//     console.log(error);
+// })
 
 // // Mostrando resultados node functions.js: D:\Laboratoria\DEV003-md-links\para-pruebas para-pruebas\con-links.md
 // console.log('------------------------------------------------------------------- ¿La ruta existe?');
@@ -66,14 +136,24 @@ const readFiles = (myPath) => {
 // console.log('README.md >>>', isItMd('README.md')); // true
 // console.log('index.js >>>', isItMd('index.js')); // false
 
-// console.log('------------------------------------------------------------------- ¿El directorio tiene archivos?');
-// console.log(myPath1, '¿tiene archivos? >>>', haveFiles(myPath1));
-// // console.log('cuántos y cuáles son? >>>', `son ${readFiles(myPath1).length}`, readFiles(myPath1));
+// console.log('------------------------------------------------------------------- ¿El directorio tiene elementos?');
+// console.log(myPath1, haveFiles(myPath1));
 
-// console.log('------------------------------------------------------------------- ¿Qué archivos tiene el directorio?');
-// console.log(readFiles(myPath1));
+// console.log('------------------------------------------------------------------- ¿Qué elementos tiene el directorio?');
+// console.log(`El directorio tiene ${readDirectory(myPath1).length} elementos y son los siguientes`, readDirectory(myPath1));
+
+// console.log('------------------------------------------------------------------- ¿Obtener archivos Marckdown');
+// console.log(myPath1, getMdFiles(myPath1));
+
 
 module.exports = {
-    existPath, isItAbsolute, toAbsolute, isItFile, isItMd, haveFiles, readFiles
+    existPath, 
+    isItAbsolute,
+    toAbsolute,
+    isItFile,
+    isItMd,
+    haveFiles,
+    getMdFiles,
+    getLinks,
   };
   

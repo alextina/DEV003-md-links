@@ -1,4 +1,13 @@
-const { existPath, isItAbsolute, toAbsolute, isItFile, isItMd, haveFiles, readFiles } = require('./functions');
+const { 
+    existPath, 
+    isItAbsolute,
+    toAbsolute,
+    isItFile,
+    isItMd,
+    haveFiles,
+    getMdFiles,
+    getLinks,
+ } = require('./functions');
 
 const mdLinks = (path, options) => {
   return new Promise((resolve, reject) => {
@@ -7,20 +16,31 @@ const mdLinks = (path, options) => {
       if (!isItAbsolute(path)) {
         absolutePath = toAbsolute(path)
       }
-      if (!isItFile(absolutePath)) { // es un directorio
-        // console.log('buscar archivos dentro del directorio');
+      if (!isItFile(absolutePath)) {
         if (!haveFiles(absolutePath)) {
-          console.log('No tiene archivos.');
+          reject('No tiene archivos.');
         } else {
-          console.log(readFiles(absolutePath));
+          // obteniendo archivos md
+          console.log(getMdFiles(absolutePath));
         }
       } else {
         // console.log('revisar si es un archivo .md');
         if (!isItMd(absolutePath)) { // no es un archivo .md
           reject('No es un archivo Markdown.')
-          // console.log(`${absolutePath} no es un archivo Markdown`);
+          // console.log(`${absolut ePath} no es un archivo Markdown`);
         } else {
-          resolve('Es un archivo Markdown.')
+          // resolve('Es un archivo Markdown.') // es un archivo md 
+          getLinks(absolutePath)
+          .then(links => {
+            if(links.length === 0) {
+              reject('No tiene links.')
+            } else {
+              resolve(links);
+            }
+          })
+        .catch(error => {
+            reject(error);
+          })
         }
       }
     } else {

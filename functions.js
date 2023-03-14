@@ -1,9 +1,6 @@
 const fs = require('fs');
-const { resolve } = require('path');
 const path = require('path');
-const myPath0 = 'noexiste.md' //
-const myPath1 = process.argv[2]; // absoluta: D:\Laboratoria\DEV003-md-links\
-const myPath2 = process.argv[3]; // relativa: README.md
+// const fetch = require('node-fetch');
 
 // console.log(process.argv);
 
@@ -54,18 +51,6 @@ const getMdFiles = (directoryPath) => {
     });
 }
 
-// const readMdFile = (myPath) => {
-// fs.readFile(myPath, 'utf8', (err, data) => {
-//   if (err) {
-//     console.log(err);    ;
-//   } else {
-//     console.log(data);
-//   }
-// });
-// }
-
-// console.log(readMdFile(myPath1));
-
 // Leyendo archivo Marckdown
 const readMdFile = (filePath) => {  
     return new Promise((resolve, reject) => {
@@ -79,26 +64,25 @@ const readMdFile = (filePath) => {
     });
 };  
 
-// // console.log('------------------------------------------------------------------- ¿Leyendo archivo md');
-// readMdFile(myPath1)
-// .then(data => {
+// readMdFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')
+// .then((data) => {
 //     console.log(data);
 // })
-// .catch(err => {
-//     console.error(err);
-// });
+// .catch((error) => {
+//     console.log(error);
+// })
 
 // Extraer links
 const getLinks = (filePath) => {  
     return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf8', (error, dataLinks) => {
+        fs.readFile(filePath, 'utf8', (error, allData) => {
             if (error) {
                 reject(error);
             } else {
                const linkRegex = /\[([^\]]+)\]\((http[s]?:\/\/[^\)]+)\)/g;
-               const links = Array.from(dataLinks.matchAll(linkRegex), matchLink => ({
-                href: matchLink[2],
-                text: matchLink[1],
+               const links = Array.from(allData.matchAll(linkRegex), matchedLink => ({
+                href: matchedLink[2],
+                text: matchedLink[1],
                 file: filePath,
                }));
                resolve(links);
@@ -107,53 +91,49 @@ const getLinks = (filePath) => {
     });
 };
 
-// getLinks(myPath1)
-// .then(links => {
-//     console.log(links);
-// })
-// .catch(error => {
-//     console.log(error);
-// })
+const axios = require('axios');
 
-// // Mostrando resultados node functions.js: D:\Laboratoria\DEV003-md-links\para-pruebas para-pruebas\con-links.md
-// console.log('------------------------------------------------------------------- ¿La ruta existe?');
-// console.log(myPath0, existPath(myPath0)); // noexiste.md false
-// console.log(myPath1, existPath(myPath1)); // D:/Laboratoria/DEV003-md-links/ true
-// console.log(myPath2, existPath(myPath2)); // README.md true
+const validateLink = (link) => {
+    return new Promise((resolve, reject) => {
+        axios.get(link)
+        .then((response) => {
+            resolve({
+                link, 
+                status: response.status,
+                statusText: response.statusText,
+                // ok,
+            });
+        })
+        .catch((error) => {
+          reject({
+            link, 
+            status: error.response.status,
+            statusText: error.response.statusText,
+            // fail,
+          });
+        })
+    })
+}
 
-// console.log('------------------------------------------------------------------- ¿La ruta es absoluta?');
-// console.log(myPath1, isItAbsolute(myPath1)); // D:/Laboratoria/DEV003-md-links/ true
-// console.log(myPath2, isItAbsolute(myPath2)); // README.md false
-
-// console.log('------------------------------------------------------------------- Convertir ruta relativa a absoluta');
-// console.log(myPath2, ' >>> ', toAbsolute(myPath2)); // README.md  >>>  D:\Laboratoria\DEV003-md-links\README.md
-
-// console.log('------------------------------------------------------------------- ¿La ruta es un archivo?');
-// console.log(myPath1, isItFile(myPath1));
-// console.log(myPath2, isItFile(myPath2));
-
-// console.log('------------------------------------------------------------------- ¿Es un archivo .md?');
-// console.log('README.md >>>', isItMd('README.md')); // true
-// console.log('index.js >>>', isItMd('index.js')); // false
-
-// console.log('------------------------------------------------------------------- ¿El directorio tiene elementos?');
-// console.log(myPath1, haveFiles(myPath1));
-
-// console.log('------------------------------------------------------------------- ¿Qué elementos tiene el directorio?');
-// console.log(`El directorio tiene ${readDirectory(myPath1).length} elementos y son los siguientes`, readDirectory(myPath1));
-
-// console.log('------------------------------------------------------------------- ¿Obtener archivos Marckdown');
-// console.log(myPath1, getMdFiles(myPath1));
+validateLink('https://github.com/alextina')
+.then((result) => {
+    console.log(result);
+})
+.catch((error) => {
+    console.log(error);
+})
 
 
 module.exports = {
-    existPath, 
-    isItAbsolute,
-    toAbsolute,
-    isItFile,
-    isItMd,
-    haveFiles,
-    getMdFiles,
-    getLinks,
+    existPath, // a index.js + functions.espect.js
+    isItAbsolute, // a index.js + functions.espect.js
+    toAbsolute, // a index.js + functions.espect.js
+    isItFile, // a index.js + functions.espect.js
+    isItMd, // a index.js + functions.espect.js
+    haveFiles, // a index.js + functions.espect.js
+    readDirectory, // functions.espect.js
+    getMdFiles, // a index.js
+    readMdFile, // functions.espect.js
+    getLinks, // a index.js
   };
   

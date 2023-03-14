@@ -21,7 +21,8 @@ const mdLinks = (path, options) => {
           reject('No tiene archivos.');
         } else {
           // obteniendo archivos md
-          console.log(getMdFiles(absolutePath));
+          console.log(getMdFiles(absolutePath)); 
+          // analizar cada archivo md para leer sus links
         }
       } else {
         // console.log('revisar si es un archivo .md');

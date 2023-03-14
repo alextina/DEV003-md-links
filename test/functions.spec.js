@@ -1,4 +1,14 @@
-const { existPath, isItAbsolute, toAbsolute, isItFile, isItMd, haveFiles, readFiles} = require('../functions.js');
+const {
+  existPath, 
+  isItAbsolute,
+  toAbsolute,
+  isItFile,
+  isItMd,
+  haveFiles,
+  readDirectory,
+  getMdFiles,
+  readMdFile,
+} = require('../functions.js');
 
 describe('existPath', () => {
     it('debería retornar "false" para una ruta no existente: noexiste.md', () => {
@@ -60,8 +70,28 @@ describe('haveFiles', () => {
   });
 });
 
-describe('readFiles', () => {
+describe('readDirectory', () => {
   it('debería retornar los archivos del directorio' , () => {
-    expect(readFiles('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'archivo-texto.txt', 'con-links.md', 'sin-archivos' ]);
+    expect(readDirectory('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'archivo-texto.txt', 'con-links.md', 'sin-archivos', 'sin-links.md' ]);
+  });
+});
+
+describe('getMdFiles', () => {
+  it('debería retornar solo los archivos Marckdown del directorio' , () => {
+    expect(getMdFiles('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md', 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\sin-links.md' ]);
+  });
+});
+
+// probar una promesa
+describe('readMdFile', () => {
+  it('' , () => {
+    expect(readMdFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toEqual();
+  });
+});
+
+// probar una promesa
+describe('readMdFile', () => {
+  it('' , () => {
+    expect(readMdFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toEqual();
   });
 });

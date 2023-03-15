@@ -40,16 +40,29 @@ const haveFiles = (myPath) => {
 }
 
 // Verifica si el directorio tiene archivos
-const readDirectory = (filePath) => {
-    return fs.readdirSync(filePath)
+const readDirectory = (directoryPath) => {
+    return fs.readdirSync(directoryPath)
 }
 
-// obtiene los archivos md
 const getMdFiles = (directoryPath) => {
-    return readDirectory(directoryPath).filter(isItMd).map((filePath) => {
-        return path.join(directoryPath, filePath);
-    });
+    const files = readDirectory(directoryPath).filter(isItMd);
+    const mdFiles = [];
+
+    for(let i = 0; i < files.length; i++) {
+        const filePath = path.join(directoryPath, files[i]);
+        mdFiles.push(filePath);
+    };
+    return mdFiles;
 }
+// console.log(isItMd('para-pruebas/sin-links.md'));
+// console.log(getMdFiles('para-pruebas'));
+
+// // obtiene los archivos md
+// const getMdFiles = (directoryPath) => {
+//     return readDirectory(directoryPath).filter(isItMd).map((filePath) => {
+//         return path.join(directoryPath, filePath);
+//     });
+// }
 
 // Leyendo archivo Marckdown
 const readMdFile = (filePath) => {  
@@ -63,14 +76,6 @@ const readMdFile = (filePath) => {
         });
     });
 };  
-
-// readMdFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')
-// .then((data) => {
-//     console.log(data);
-// })
-// .catch((error) => {
-//     console.log(error);
-// })
 
 // Extraer links
 const getLinks = (filePath) => {  
@@ -101,27 +106,34 @@ const validateLink = (link) => {
                 link, 
                 status: response.status,
                 statusText: response.statusText,
-                // ok,
+                message: 'ok',
             });
         })
         .catch((error) => {
-          reject({
-            link, 
-            status: error.response.status,
-            statusText: error.response.statusText,
-            // fail,
-          });
+            if(error.response) {
+                reject({
+                    link, 
+                    status: error.response.status,
+                    statusText: error.response.statusText,
+                    message: 'fail',
+                  });
+            } else {
+                reject({
+                     link,
+                     error: error.message,
+                })
+            }
         })
     })
 }
 
-validateLink('https://github.com/alextina')
-.then((result) => {
-    console.log(result);
-})
-.catch((error) => {
-    console.log(error);
-})
+// validateLink(process.argv[2])
+// .then((result) => {
+//     console.log(result);
+// })
+// .catch((error) => {
+//     console.log(error);
+// })
 
 
 module.exports = {
@@ -135,5 +147,6 @@ module.exports = {
     getMdFiles, // a index.js
     readMdFile, // functions.espect.js
     getLinks, // a index.js
+    validateLink,
   };
   

@@ -12,42 +12,37 @@ const {
 const mdLinks = (path, options) => {
   return new Promise((resolve, reject) => {
     let absolutePath = path;
-    if (existPath(path)) {
+    if (!existPath(path)) {
+        reject(new Error('La ruta (path) no existe.'));
+    } else {
       if (!isItAbsolute(path)) {
         absolutePath = toAbsolute(path)
       }
       if (!isItFile(absolutePath)) {
         if (!haveFiles(absolutePath)) {
-          reject('No tiene archivos.');
+          reject(new Error('No tiene archivos.'));
         } else {
-          // obteniendo archivos md
-          console.log(getMdFiles(absolutePath)); 
-          // analizar cada archivo md para leer sus links
+          // muestra los archivos (recursividad para leer archivos md que tengas links)
+          console.log(getMdFiles(absolutePath));
         }
       } else {
-        // console.log('revisar si es un archivo .md');
-        if (!isItMd(absolutePath)) { // no es un archivo .md
-          reject('No es un archivo Markdown.')
-          // console.log(`${absolut ePath} no es un archivo Markdown`);
+        if (!isItMd(absolutePath)) {
+          reject(new Error('No es un archivo Markdown.'))
         } else {
-          // resolve('Es un archivo Markdown.') // es un archivo md 
           getLinks(absolutePath)
           .then(links => {
             if(links.length === 0) {
-              reject('No tiene links.')
+              reject(new Error('No tiene links.'))
             } else {
               resolve(links);
             }
           })
-        .catch(error => {
+          .catch(error => {
             reject(error);
           })
         }
       }
-    } else {
-    // si no existe la ruta, entonces rechaza la promesa
-    reject('La ruta (path) no existe.');
-  }
+    }
   })
 }
 

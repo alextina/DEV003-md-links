@@ -7,6 +7,8 @@ const {
     haveFiles,
     getMdFiles,
     getLinks,
+    readMdFile,
+    validateLinks,
  } = require('./functions');
 
 const mdLinks = (path, options) => {
@@ -22,28 +24,37 @@ const mdLinks = (path, options) => {
         if (!haveFiles(absolutePath)) {
           reject(new Error('No tiene archivos.'));
         } else {
-          // muestra los archivos (recursividad para leer archivos md que tengas links)
-          console.log(getMdFiles(absolutePath));
+          // muestra los archivos (recursividad para leer archivos md que tengan links)
+          console.log(getMdFiles(absolutePath), 'se tienen que obtener los archivos .md ¿recursividad?');
         }
       } else {
         if (!isItMd(absolutePath)) {
           reject(new Error('No es un archivo Markdown.'))
         } else {
-          getLinks(absolutePath)
+          return readMdFile(absolutePath)
           .then(links => {
             if(links.length === 0) {
               reject(new Error('No tiene links.'))
-            } else {
-              resolve(links);
             }
-          })
-          .catch(error => {
-            reject(error);
-          })
+            const allLinks = getLinks(absolutePath);
+            if (options.validate === false) {
+              resolve(allLinks);
+            } else if (options.validate === true) {
+              resolve('aquí se tiene que ejecutar la función validateLinks en cada link')
+              // validateLinks(allLinks)
+              // .then((validatedLinks) => {
+              //   resolve(validatedLinks);
+              // })
+              // .catch((error) => {
+              //   reject(error);
+              // });
+                };
+              })
+            }
+          }
         }
       }
-    }
-  })
+  )
 }
 
 module.exports = {

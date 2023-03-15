@@ -1,8 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-// const fetch = require('node-fetch');
-
-// console.log(process.argv);
+// const axios = require('axios');
 
 // ¿la ruta existe?
 const existPath = (myPath) => {
@@ -54,28 +52,23 @@ const getMdFiles = (directoryPath) => {
     };
     return mdFiles;
 }
-// console.log(isItMd('para-pruebas/sin-links.md'));
-// console.log(getMdFiles('para-pruebas'));
-
-// // obtiene los archivos md
-// const getMdFiles = (directoryPath) => {
-//     return readDirectory(directoryPath).filter(isItMd).map((filePath) => {
-//         return path.join(directoryPath, filePath);
-//     });
-// }
 
 // Leyendo archivo Marckdown
 const readMdFile = (filePath) => {  
     return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf8', (error, data) => {
+        fs.readFile(filePath, 'utf8', (error, mdContent) => {
             if (error) {
                 reject(error);
             } else {
-                resolve(data);
+                resolve(mdContent);
             }
         });
     });
 };  
+
+// readMdFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')
+// .then( result => console.log(result)
+// .catch(error => console.log(error)))
 
 // Extraer links
 const getLinks = (filePath) => {  
@@ -96,8 +89,7 @@ const getLinks = (filePath) => {
     });
 };
 
-const axios = require('axios');
-
+// valida solo 1 link
 const validateLink = (link) => {
     return new Promise((resolve, reject) => {
         axios.get(link)
@@ -127,7 +119,66 @@ const validateLink = (link) => {
     })
 }
 
-// validateLink(process.argv[2])
+// validateLink('http://github.com')
+// .then((result) => {
+//     console.log(result);
+// })
+// .catch((error) => {
+//     console.log(error);
+// })
+
+// validateLink('http://github.com/noexistepagina')
+// .then((result) => {
+//     console.log(result);
+// })
+// .catch((error) => {
+//     console.log(error);
+// })
+
+
+//allLinks es un array de links
+const validateLinks = (allLinks) => {    
+    return Promise.all(allLinks.map((link) => {
+        return axios.get(link.href)
+        .then((response) => {
+            return {
+                link: link.href, 
+                status: response.status,
+                statusText: response.statusText,
+                message: 'ok',
+            };
+        })
+        .catch((error) => {
+            if(error.response) {
+                return {
+                    link: link.href, 
+                    status: error.response.status,
+                    statusText: error.response.statusText,
+                    message: 'fail',
+                    };
+            } else {
+                return {
+                        link,
+                        error: error.message,
+                }
+            }
+        })
+    }))}
+
+// const links = [
+//     {
+//         href: 'https://github.com/alextina',
+//         text: 'éxito',
+//         file: 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md'
+//     },
+//     {
+//         href: 'https://github.com/alextina/noexiste',
+//         text: 'error',
+//         file: 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md'
+//     }
+// ];
+
+// validateLinks(links)
 // .then((result) => {
 //     console.log(result);
 // })
@@ -148,5 +199,6 @@ module.exports = {
     readMdFile, // functions.espect.js
     getLinks, // a index.js
     validateLink,
+    validateLinks,
   };
   

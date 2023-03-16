@@ -4,10 +4,9 @@ const {
     toAbsolute,
     isItFile,
     isItMd,
-    haveFiles,
     getMdFiles,
-    getLinks,
     readMdFile,
+    getLinks,
     validateLinks,
  } = require('./functions');
 
@@ -21,40 +20,36 @@ const mdLinks = (path, options) => {
         absolutePath = toAbsolute(path)
       }
       if (!isItFile(absolutePath)) {
-        if (!haveFiles(absolutePath)) {
-          reject(new Error('No tiene archivos.'));
+        if (getMdFiles(absolutePath).length === 0) {
+          reject(new Error('No tiene archivos Marckdown.'));
         } else {
           // muestra los archivos (recursividad para leer archivos md que tengan links)
-          console.log(getMdFiles(absolutePath), 'se tienen que obtener los archivos .md ¿recursividad?');
+          console.log(getMdFiles(absolutePath), 'aplicar recursividad para leer cada archivo .md');
         }
       } else {
         if (!isItMd(absolutePath)) {
           reject(new Error('No es un archivo Markdown.'))
         } else {
-          return readMdFile(absolutePath)
-          .then(links => {
-            if(links.length === 0) {
-              reject(new Error('No tiene links.'))
+          readMdFile(absolutePath)
+          .then(mdContent => {
+            const allLinks = getLinks(mdContent, absolutePath);
+            if (allLinks.length === 0) {
+              reject(new Error('El archivo Markdown no contiene links.'));
+            } else {
+              if (!options.validate) {
+                resolve(allLinks);
+              } else {
+                resolve(validateLinks(allLinks));
+              }
             }
-            const allLinks = getLinks(absolutePath);
-            if (options.validate === false) {
-              resolve(allLinks);
-            } else if (options.validate === true) {
-              resolve('aquí se tiene que ejecutar la función validateLinks en cada link')
-              // validateLinks(allLinks)
-              // .then((validatedLinks) => {
-              //   resolve(validatedLinks);
-              // })
-              // .catch((error) => {
-              //   reject(error);
-              // });
-                };
-              })
-            }
-          }
+          })
+          .catch((error) => {
+            reject(new Error(error))
+          });
         }
       }
-  )
+    }
+  })
 }
 
 module.exports = {

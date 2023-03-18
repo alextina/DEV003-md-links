@@ -4,11 +4,18 @@ const {
   toAbsolute,
   isItFile,
   isItMd,
-  haveFiles,
   readDirectory,
   getMdFiles,
   readMdFile,
 } = require('../functions.js');
+
+jest.mock('axios', () => jest.fn());
+
+// function tick() {
+//   return new Promise((resolve) => {
+//     setTimeout(resolve, 0);
+//   });
+// }
 
 describe('existPath', () => {
     it('debería retornar "false" para una ruta no existente: noexiste.md', () => {
@@ -60,38 +67,26 @@ describe('isItMd', () => {
   });
 });
 
-describe('haveFiles', () => {
-  it('debería retornar "true" cuando un directorio tiene archivos', () => {
-    expect(haveFiles('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toBe(true);
-  });
-
-  it('debería retornar "false" cuando un directorio no tiene archivos', () => {
-    expect(haveFiles('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\sin-archivos')).toBe(false);
-  });
-});
-
 describe('readDirectory', () => {
   it('debería retornar los archivos del directorio' , () => {
-    expect(readDirectory('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'archivo-texto.txt', 'con-links.md', 'sin-archivos', 'sin-links.md' ]);
+    expect(readDirectory('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'archivo-texto.txt', 'con-archivos', 'con-links.md', 'sin-archivos', 'sin-links.md' ]);
   });
 });
 
-describe('getMdFiles', () => {
-  it('debería retornar solo los archivos Marckdown del directorio' , () => {
+describe('getMdFiles', () => { // eliminar test al eliminar función
+  it('debería retornar solo los archivos Markdown del directorio' , () => {
     expect(getMdFiles('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md', 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\sin-links.md' ]);
   });
 });
 
-// probar una promesa
+// falta:
+  // readMdFile (es promesa ¿esta bien usar async/await)
 describe('readMdFile', () => {
-  it('' , () => {
-    expect(readMdFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toEqual();
-  });
-});
+  it('debería mostrar el contenido del directorio', async () => {
+    const result = await readMdFile('para-pruebas\\con-archivos\\leyendo-md.md');
+    expect(result).toEqual('Este es el contenido del archivo markdown.')
+  })
+})
 
-// probar una promesa
-describe('readMdFile', () => {
-  it('' , () => {
-    expect(readMdFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toEqual();
-  });
-});
+  // getLinks
+  // validateLinks

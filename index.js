@@ -4,11 +4,11 @@ const {
     toAbsolute,
     isItFile,
     isItMd,
-    getMdFiles,
     readMdFile,
     getAllFiles,
     getLinks,
     validateLinks,
+    readDirectory,
  } = require('./functions');
 
 const mdLinks = (path, options) => {
@@ -21,9 +21,9 @@ const mdLinks = (path, options) => {
         absolutePath = toAbsolute(path);
       };
       if (!isItFile(absolutePath)) {
-        const allMdFiles = getMdFiles(absolutePath);
-        if (allMdFiles.length === 0) {
-          reject(new Error(`The directory ${path} does not have Markdown (.md) files.`));
+        const directoryContent = readDirectory(absolutePath);
+        if (directoryContent.length === 0) {
+          reject(new Error(`The directory ${path} is empty`));
         } else {
           const allFilePaths = getAllFiles(absolutePath, arrayOfFiles = []);
           let promises = [];

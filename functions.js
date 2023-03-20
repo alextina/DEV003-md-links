@@ -33,18 +33,6 @@ const readDirectory = (directoryPath) => {
     return fs.readdirSync(directoryPath);
 }
 
-// obtiene solo los archivos .md del directorio YA NO SIRVE, porque tengo que ver si tiene o no tiene archivos!!!!!!!!
-const getMdFiles = (directoryPath) => {
-    const files = readDirectory(directoryPath).filter(isItMd);
-    let mdFiles = [];
-
-    for(let i = 0; i < files.length; i++) {
-        const filePath = path.join(directoryPath, files[i]);
-        mdFiles.push(filePath);
-    };
-    return mdFiles;
-}
-
 // lee archivo .md
 const readMdFile = (filePath) => {  
     return new Promise((resolve, reject) => {
@@ -115,15 +103,14 @@ const validateLinks = (allLinks) => {
 
 
 module.exports = {
-    existPath, // a index.js + functions.espect.js
-    isItAbsolute, // a index.js + functions.espect.js
-    toAbsolute, // a index.js + functions.espect.js
-    isItFile, // a index.js + functions.espect.js
-    isItMd, // a index.js + functions.espect.js
-    readDirectory, // functions.espect.js
-    getMdFiles, // a index.js
+    existPath,
+    isItAbsolute,
+    toAbsolute,
+    isItFile,
+    isItMd,
+    readDirectory,
     readMdFile,
     getAllFiles,
-    getLinks, // a index.js
+    getLinks,
     validateLinks,
   };

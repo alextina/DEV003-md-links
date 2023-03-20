@@ -6,6 +6,7 @@ const {
     isItMd,
     getMdFiles,
     readMdFile,
+    getAllFiles,
     getLinks,
     validateLinks,
  } = require('./functions');
@@ -24,9 +25,29 @@ const mdLinks = (path, options) => {
         if (allMdFiles.length === 0) {
           reject(new Error(`The directory ${path} does not have Markdown (.md) files.`));
         } else {
-          // muestra los archivos (¿recursividad para leer archivos md que tengan links?)
-          console.log(allMdFiles)
-          // allMdFiles.forEach((mdFile) => console.log(mdFile, `aplicar recursividad aquí`))
+          const allFilePaths = getAllFiles(absolutePath, arrayOfFiles = []);
+          let promises = [];
+          allFilePaths.forEach((filePath) => {
+            promises.push(mdLinks(filePath, options))
+          });
+          Promise.allSettled(promises)
+          .then((results) => {
+            let allFilePathsArray = [];
+            for(let i = 0; i < results.length; i++) {
+              const result = results[i];
+              if (result.status === 'fulfilled') {
+                const res = result.value;
+                for(let j = 0; j < res.length; j++) {
+                  const object = res[j];
+                  allFilePathsArray.push(object);
+                };
+              } else {
+                const error = result.reason;
+                console.log(error.message);
+              };
+            };
+            resolve(allFilePathsArray);
+          })
         };
       } else {
         if (!isItMd(absolutePath)) {

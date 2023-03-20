@@ -58,6 +58,21 @@ const readMdFile = (filePath) => {
     });
 }; 
 
+// obtiene links dentro de direcotrio hasta que no hayan directorios
+function getAllFiles(directoryPath, arrayOfFiles = []){
+	const directoryElements = readDirectory(directoryPath)
+	directoryElements.forEach((directoryElement) => {
+        const elementPath = path.join(directoryPath, directoryElement);
+		const fileOrDir = fs.statSync(elementPath);
+		if(fileOrDir.isDirectory(directoryPath)){
+			getAllFiles(elementPath, arrayOfFiles);
+		} else {
+			arrayOfFiles.push(path.join(directoryPath, directoryElement));
+		};
+	});
+	return arrayOfFiles;
+};
+
 // extrae links del archivo .md
 const getLinks = (mdContent, filePath) => {
     const linkRegex = /\[([^\]]+)\]\((http[s]?:\/\/[^\)]+)\)/g;
@@ -108,6 +123,7 @@ module.exports = {
     readDirectory, // functions.espect.js
     getMdFiles, // a index.js
     readMdFile,
+    getAllFiles,
     getLinks, // a index.js
     validateLinks,
   };

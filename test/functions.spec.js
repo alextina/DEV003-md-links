@@ -5,17 +5,12 @@ const {
   isItFile,
   isItMd,
   readDirectory,
-  getMdFiles,
   readMdFile,
+  getAllFiles,
+  getLinks,
 } = require('../functions.js');
 
 jest.mock('axios', () => jest.fn());
-
-// function tick() {
-//   return new Promise((resolve) => {
-//     setTimeout(resolve, 0);
-//   });
-// }
 
 describe('existPath', () => {
     it('debería retornar "false" para una ruta no existente: noexiste.md', () => {
@@ -68,19 +63,28 @@ describe('isItMd', () => {
 });
 
 describe('readDirectory', () => {
-  it('debería retornar los archivos del directorio' , () => {
-    expect(readDirectory('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'archivo-texto.txt', 'con-archivos', 'con-links.md', 'sin-archivos', 'sin-links.md' ]);
+  it('debería retornar un array con los archivos del directorio' , () => {
+    expect(readDirectory('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([
+      'archivo-texto.txt',
+      'con-archivos',
+      'con-links.md',
+      'sin-archivos',
+      'sin-links.md' ]);
   });
 });
 
-describe('getMdFiles', () => { // eliminar test al eliminar función
-  it('debería retornar solo los archivos Markdown del directorio' , () => {
-    expect(getMdFiles('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([ 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md', 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\sin-links.md' ]);
-  });
-});
+describe('getAllFiles', () => {
+  it('debería retornar un array con la lista de rutas de los archivos dentro del directorio y subdirectorios', () => {
+    expect(getAllFiles('para-pruebas')).toEqual([
+      'para-pruebas\\archivo-texto.txt',
+      'para-pruebas\\con-archivos\\leyendo-md.md',
+      'para-pruebas\\con-archivos\\readme-prueba.md',
+      'para-pruebas\\con-links.md',
+      'para-pruebas\\sin-links.md'
+    ])
+  })
+})
 
-// falta:
-  // readMdFile (es promesa ¿esta bien usar async/await)
 describe('readMdFile', () => {
   it('debería mostrar el contenido del directorio', async () => {
     const result = await readMdFile('para-pruebas\\con-archivos\\leyendo-md.md');
@@ -88,5 +92,44 @@ describe('readMdFile', () => {
   })
 })
 
-  // getLinks
-  // validateLinks
+describe('getLinks', () => {
+  it('debería retornar un array de links dentro del archivo markdown', () => {
+    readMdFile('para-pruebas\\con-links.md')
+    .then((content) => {
+      expect(getLinks(content, 'para-pruebas\\con-links.md')).toEqual([
+          {
+            href: 'https://github.com/alextina',
+            text: 'éxito',
+            file: 'para-pruebas\\con-links.md'
+          },
+          {
+            href: 'https://github.com/alextina/noexiste',
+            text: 'error',
+            file: 'para-pruebas\\con-links.md'
+          }
+        ])
+    })
+  })
+})
+
+// describe('validateLinks', () => {
+//   it('debería retornar la lista de todos los links validados con su status http', async () => {
+//     const result = await validateLinks([
+//       {
+//         href: 'https://github.com/alextina',
+//         text: 'éxito',
+//         file: 'para-pruebas\\con-links.md'
+//       }
+//     ]);
+//     expect(result).toEqual([
+//       {
+//         href: 'https://github.com/alextina',
+//         text: 'éxito',
+//         file: 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md',
+//         status: 200,
+//         statusText: 'OK',
+//         message: 'ok'
+//       }
+//     ])
+//   })
+// })

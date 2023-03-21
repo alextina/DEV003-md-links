@@ -34,7 +34,7 @@ const readDirectory = (directoryPath) => {
 }
 
 // lee archivo .md
-const readMdFile = (filePath) => {  
+const readMdFile = (filePath) => {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, 'utf8', (error, mdContent) => {
             if (error) {
@@ -44,21 +44,21 @@ const readMdFile = (filePath) => {
             }
         });
     });
-}; 
+};
 
 // obtiene links dentro de direcotrio hasta que no hayan directorios
-function getAllFiles(directoryPath, arrayOfFiles = []){
-	const directoryElements = readDirectory(directoryPath)
-	directoryElements.forEach((directoryElement) => {
+function getAllFiles(directoryPath, arrayOfFiles = []) {
+    const directoryElements = readDirectory(directoryPath)
+    directoryElements.forEach((directoryElement) => {
         const elementPath = path.join(directoryPath, directoryElement);
-		const fileOrDir = fs.statSync(elementPath);
-		if(fileOrDir.isDirectory(directoryPath)){
-			getAllFiles(elementPath, arrayOfFiles);
-		} else {
-			arrayOfFiles.push(path.join(directoryPath, directoryElement));
-		};
-	});
-	return arrayOfFiles;
+        const fileOrDir = fs.statSync(elementPath);
+        if (fileOrDir.isDirectory(directoryPath)) {
+            getAllFiles(elementPath, arrayOfFiles);
+        } else {
+            arrayOfFiles.push(elementPath);
+        };
+    });
+    return arrayOfFiles;
 };
 
 // extrae links del archivo .md
@@ -73,34 +73,39 @@ const getLinks = (mdContent, filePath) => {
 }
 
 // valida links dentro de un array (muestra status)
-const validateLinks = (allLinks) => {    
+const validateLinks = (allLinks) => {
     return Promise.all(allLinks.map((link) => {
-        return axios.get(link.href)
-        .then((response) => {
-            return {
-                href: link.href,
-                text: link.text,
-                file: link.file, 
-                status: response.status,
-                statusText: response.statusText,
-                message: 'ok',
-            };
-        })
-        .catch((error) => {
-            if(error.response) {
+            return axios.get(link.href)
+            .then((response) => {
                 return {
                     href: link.href,
                     text: link.text,
-                    file: link.file, 
-                    status: error.response.status,
-                    statusText: error.response.statusText,
-                    message: 'fail',
-                    };
-            }
-        })
-    }))
-}
-
+                    file: link.file,
+                    status: response.status,
+                    statusText: response.statusText,
+                    message: 'ok',
+                };
+            })
+            .catch((error) => {
+                let errorStatus = 400;
+                let errorStatusText = 'internal server error';
+                if (error.response) {
+                  errorStatus = error.response.status;
+                  errorStatusText = error.response.statusText;
+                } else if (error.request) {
+                  errorStatus = 500;
+                } 
+                return {
+                  text: link.text,
+                  href: link.href,
+                  file: link.file,
+                  status: errorStatus,
+                  statusText: errorStatusText,
+                  message: 'fail'
+                };
+              });
+    }));
+};
 
 module.exports = {
     existPath,
@@ -113,4 +118,4 @@ module.exports = {
     getAllFiles,
     getLinks,
     validateLinks,
-  };
+};

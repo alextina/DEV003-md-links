@@ -1,5 +1,6 @@
+const axios = require('axios');
 const {
-  existPath, 
+  existPath,
   isItAbsolute,
   toAbsolute,
   isItFile,
@@ -8,30 +9,32 @@ const {
   readMdFile,
   getAllFiles,
   getLinks,
+  validateLinks,
 } = require('../functions.js');
 
-jest.mock('axios', () => jest.fn());
+// jest.mock('axios', () => jest.fn());
+jest.mock('axios');
 
 describe('existPath', () => {
-    it('debería retornar "false" para una ruta no existente: noexiste.md', () => {
-      expect(existPath('ejemplo.md')).toBe(false);
-    });
-  
-    it('debería retornar "true" para una ruta de directorio: D:\\Laboratoria\\DEV003-md-links\\para-pruebas', () => {
-      expect(existPath('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toBe(true);
-    });
-  
-    it('debería retornar "true" para una ruta de archivo: D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md', () => {
-      expect(existPath('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toBe(true);
-    });
+  it('debería retornar "false" para una ruta no existente: noexiste.md', () => {
+    expect(existPath('ejemplo.md')).toBe(false);
   });
+
+  it('debería retornar "true" para una ruta de directorio: D:\\Laboratoria\\DEV003-md-links\\para-pruebas', () => {
+    expect(existPath('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toBe(true);
+  });
+
+  it('debería retornar "true" para una ruta de archivo: D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md', () => {
+    expect(existPath('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toBe(true);
+  });
+});
 
 describe('isItAbsolute', () => {
   it('debería retornar "true" para una ruta absoluta: D:\\Laboratoria\\DEV003-md-links\\para-pruebas', () => {
     expect(isItAbsolute('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toBe(true);
   });
-  
-  it ('debería retornar "false" para una ruta relativa: para-pruebas\\con-links.md', () => {
+
+  it('debería retornar "false" para una ruta relativa: para-pruebas\\con-links.md', () => {
     expect(isItAbsolute('para-pruebas\\con-links.md')).toBe(false);
   });
 });
@@ -44,11 +47,11 @@ describe('toAbsolute', () => {
 
 describe('isItFile', () => {
   it('debería retornar "true" para un archivo: D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md', () => {
-  expect(isItFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toBe(true);
+    expect(isItFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md')).toBe(true);
   });
 
   it('debería retornar "false" para un directorio: D:\\Laboratoria\\DEV003-md-links\\para-pruebas', () => {
-  expect(isItFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toBe(false);
+    expect(isItFile('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toBe(false);
   });
 });
 
@@ -63,13 +66,13 @@ describe('isItMd', () => {
 });
 
 describe('readDirectory', () => {
-  it('debería retornar un array con los archivos del directorio' , () => {
+  it('debería retornar un array con los archivos del directorio', () => {
     expect(readDirectory('D:\\Laboratoria\\DEV003-md-links\\para-pruebas')).toEqual([
       'archivo-texto.txt',
       'con-archivos',
       'con-links.md',
       'sin-archivos',
-      'sin-links.md' ]);
+      'sin-links.md']);
   });
 });
 
@@ -86,17 +89,20 @@ describe('getAllFiles', () => {
 })
 
 describe('readMdFile', () => {
-  it('debería mostrar el contenido del directorio', async () => {
+  it('debería mostrar el contenido de un archivo', async () => {
     const result = await readMdFile('para-pruebas\\con-archivos\\leyendo-md.md');
     expect(result).toEqual('Este es el contenido del archivo markdown.')
-  })
+  });
+  it('debería arrojar un error si intenta leer un directorio', () => {
+    expect(readMdFile('para-pruebas\\con-archivos')).rejects.toThrow('EISDIR: illegal operation on a directory, read')
+  });
 })
 
 describe('getLinks', () => {
   it('debería retornar un array de links dentro del archivo markdown', () => {
-    readMdFile('para-pruebas\\con-links.md')
-    .then((content) => {
-      expect(getLinks(content, 'para-pruebas\\con-links.md')).toEqual([
+    return readMdFile('para-pruebas\\con-links.md')
+      .then((content) => {
+        expect(getLinks(content, 'para-pruebas\\con-links.md')).toEqual([
           {
             href: 'https://github.com/alextina',
             text: 'éxito',
@@ -108,28 +114,52 @@ describe('getLinks', () => {
             file: 'para-pruebas\\con-links.md'
           }
         ])
-    })
+      })
   })
 })
 
-// describe('validateLinks', () => {
-//   it('debería retornar la lista de todos los links validados con su status http', async () => {
-//     const result = await validateLinks([
-//       {
-//         href: 'https://github.com/alextina',
-//         text: 'éxito',
-//         file: 'para-pruebas\\con-links.md'
-//       }
-//     ]);
-//     expect(result).toEqual([
-//       {
-//         href: 'https://github.com/alextina',
-//         text: 'éxito',
-//         file: 'D:\\Laboratoria\\DEV003-md-links\\para-pruebas\\con-links.md',
-//         status: 200,
-//         statusText: 'OK',
-//         message: 'ok'
-//       }
-//     ])
-//   })
-// })
+describe('validateLinks', () => {
+  beforeEach(() => {
+    axios.get.mockClear()
+  })
+  it('debería retornar la lista de todos los links validados con su status http con mensaje ok', async () => {
+    axios.get.mockResolvedValueOnce(Promise.resolve({ status: 200, statusText: 'OK' }));
+    const result = await validateLinks([
+      {
+        href: 'https://github.com/alextina',
+        text: 'éxito',
+        file: 'para-pruebas\\con-links.md'
+      }
+    ]);
+    expect(result).toEqual([
+      {
+        href: 'https://github.com/alextina',
+        text: 'éxito',
+        file: 'para-pruebas\\con-links.md',
+        status: 200,
+        statusText: 'OK',
+        message: 'ok'
+      }
+    ])
+});
+  it('debería retornar la lista de todos los links validados con su status http con mensaje fail', async () => {
+    axios.get.mockResolvedValueOnce(Promise.reject({ response: { status: 404, statusText: 'Not found' }}));
+    const result = await validateLinks([
+      {
+        href: 'https://github.com/alextina/noexiste',
+        text: 'error',
+        file: 'para-pruebas\\con-links.md'
+      }
+    ]);
+    expect(result).toEqual([
+      {
+        href: 'https://github.com/alextina/noexiste',
+        text: 'error',
+        file: 'para-pruebas\\con-links.md',
+        status: 404,
+        statusText: 'Not found',
+        message: 'fail'
+      }
+    ])
+  })
+});

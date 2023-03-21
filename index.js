@@ -1,21 +1,21 @@
-const { 
-    existPath, 
-    isItAbsolute,
-    toAbsolute,
-    isItFile,
-    isItMd,
-    readMdFile,
-    getAllFiles,
-    getLinks,
-    validateLinks,
-    readDirectory,
- } = require('./functions');
+const {
+  existPath,
+  isItAbsolute,
+  toAbsolute,
+  isItFile,
+  isItMd,
+  readMdFile,
+  getAllFiles,
+  getLinks,
+  validateLinks,
+  readDirectory,
+} = require('./functions');
 
 const mdLinks = (path, options) => {
   return new Promise((resolve, reject) => {
     let absolutePath = path;
     if (!existPath(path)) {
-        reject(new Error(`${path} is an nvalid path.`));
+      reject(new Error(`${path} is an nvalid path.`));
     } else {
       if (!isItAbsolute(path)) {
         absolutePath = toAbsolute(path);
@@ -26,49 +26,49 @@ const mdLinks = (path, options) => {
           reject(new Error(`The directory ${path} is empty`));
         } else {
           const allFilePaths = getAllFiles(absolutePath, arrayOfFiles = []);
-          let promises = [];
+          let promises = []; // array vacio donde se guardaran las promesas
           allFilePaths.forEach((filePath) => {
-            promises.push(mdLinks(filePath, options))
+            // se iran agrenando las promesas a las que se le vaya aplicando mdLinks recursivamente
+            promises.push(mdLinks(filePath, options));
           });
+          // recorre el array de promesas y retorna su estado 
           Promise.allSettled(promises)
-          .then((results) => {
-            let allFilePathsArray = [];
-            for(let i = 0; i < results.length; i++) {
-              const result = results[i];
-              if (result.status === 'fulfilled') {
-                const res = result.value;
-                for(let j = 0; j < res.length; j++) {
-                  const object = res[j];
-                  allFilePathsArray.push(object);
+            .then((results) => {
+              let arrayResults = [];
+              for (let i = 0; i < results.length; i++) {
+                const result = results[i];
+                // si el estaus del resultado de la promesa es fulfilled
+                if (result.status === 'fulfilled') {
+                  const res = result.value;
+                  for (let j = 0; j < res.length; j++) {
+                    const object = res[j];
+                    arrayResults.push(object);
+                  };
                 };
-              } else {
-                const error = result.reason;
-                console.log(error.message);
               };
-            };
-            resolve(allFilePathsArray);
-          })
+              resolve(arrayResults);
+            })
         };
       } else {
         if (!isItMd(absolutePath)) {
           reject(new Error(`The file ${path} is not a Markdown file.`));
         } else {
           readMdFile(absolutePath)
-          .then((mdContent) => {
-            const allLinks = getLinks(mdContent, absolutePath);
-            if (allLinks.length === 0) {
-              reject(new Error(`The Markdown file ${path} does not have links.`));
-            } else {
-              if (!options.validate) {  
-                resolve(allLinks);
+            .then((mdContent) => {
+              const allLinks = getLinks(mdContent, absolutePath);
+              if (allLinks.length === 0) {
+                reject(new Error(`The Markdown file ${path} does not have links.`));
               } else {
-                resolve(validateLinks(allLinks));
+                if (!options.validate) {
+                  resolve(allLinks);
+                } else {
+                  resolve(validateLinks(allLinks));
+                };
               };
-            };
-          })
-          .catch((error) => {
-            reject(new Error(error))
-          });
+            })
+            .catch((error) => {
+              reject(new Error(error))
+            });
         };
       };
     };

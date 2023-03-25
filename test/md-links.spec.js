@@ -1,4 +1,4 @@
-const { mdLinks } = require('../index.js');
+const { mdLinks } = require('../src/index.js');
 jest.mock('axios', () => jest.fn());
 
 describe('mdLinks', () => {
@@ -12,7 +12,7 @@ describe('mdLinks', () => {
     const path = 'para-pruebas//sin-archivos';
     expect.assertions(1);
     await expect(mdLinks(path)).rejects.toEqual(new Error(`The directory ${path} is empty`));
-  })
+  });
 
   // it('Debe lanzar un error cuando la ruta del directorio ingresado esta vacío', async () => {
   //   const path = 'para-pruebas//sin-archivos';

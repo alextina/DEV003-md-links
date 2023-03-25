@@ -5,38 +5,38 @@ const axios = require('axios');
 // valida la ruta
 const existPath = (myPath) => {
     return fs.existsSync(myPath);
-}
+};
 
 // valida si la ruta es absoluta
 const isItAbsolute = (myPath) => {
     return path.isAbsolute(myPath);
-}
+};
 
 // convierte la ruta relativa a absoluta
 const toAbsolute = (myPath) => {
-    return path.resolve(myPath)
-}
+    return path.resolve(myPath);
+};
 
 // valida si la ruta es de un archivo
 const isItFile = (myPath) => {
     return fs.statSync(myPath).isFile();
-}
+};
 
 // valida si es un archivo .md
 const isItMd = (myPath) => {
     const extension = path.extname(myPath);
     return extension === '.md';
-}
+};
 
 // Lee (muestra) los archivos dentro del directorio
 const readDirectory = (directoryPath) => {
     return fs.readdirSync(directoryPath);
-}
+};
 
 // lee archivo .md
-const readMdFile = (filePath) => {
+const readingFile = (mdFilePath) => {
     return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf8', (error, mdContent) => {
+        fs.readFile(mdFilePath, 'utf8', (error, mdContent) => {
             if (error) {
                 reject(error);
             } else {
@@ -48,7 +48,7 @@ const readMdFile = (filePath) => {
 
 // obtiene links dentro de direcotrio hasta que no hayan directorios
 function getAllFiles(directoryPath, arrayOfFiles = []) {
-    const directoryElements = readDirectory(directoryPath)
+    const directoryElements = readDirectory(directoryPath);
     directoryElements.forEach((directoryElement) => {
         const elementPath = path.join(directoryPath, directoryElement);
         const fileOrDir = fs.statSync(elementPath);
@@ -70,7 +70,7 @@ const getLinks = (mdContent, filePath) => {
         file: filePath,
     }));
     return links;
-}
+};
 
 // valida links dentro de un array (muestra status)
 const validateLinks = (allLinks) => {
@@ -82,8 +82,8 @@ const validateLinks = (allLinks) => {
                     text: link.text,
                     file: link.file,
                     status: response.status,
-                    statusText: response.statusText,
-                    message: 'ok',
+                    message: response.statusText,
+                    ok: 'ok',
                 };
             })
             .catch((error) => {
@@ -100,8 +100,8 @@ const validateLinks = (allLinks) => {
                   href: link.href,
                   file: link.file,
                   status: errorStatus,
-                  statusText: errorStatusText,
-                  message: 'fail'
+                  message: errorStatusText,
+                  ok: 'fail'
                 };
               });
     }));
@@ -114,7 +114,7 @@ module.exports = {
     isItFile,
     isItMd,
     readDirectory,
-    readMdFile,
+    readingFile,
     getAllFiles,
     getLinks,
     validateLinks,

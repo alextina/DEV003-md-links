@@ -1,8 +1,17 @@
 {
   "env": {
-    "node": true
+    "node": true,
+    "commonjs": true
   },
   "parserOptions": {
     "ecmaVersion": 8
+  },
+  "rules": {
+    "no-var": "error",
+    "prefer-const": "warn",
+    "semi": [
+      "warn",
+      "always"
+    ]
   }
 }

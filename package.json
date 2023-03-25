@@ -1,7 +1,7 @@
 {
   "name": "md-links-alextina",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "directories": {
     "test": "test"
   },
@@ -10,7 +10,7 @@
     "pretest": "npm run eslint",
     "test": "jest --verbose --coverage"
   },
-    "jest": {
+  "jest": {
     "moduleNameMapper": {
       "axios": "axios/dist/node/axios.cjs"
     }
@@ -24,13 +24,13 @@
     "commit": "a63a770ea33332882790401851df337734b0b734"
   },
   "dependencies": {
-    "axios": "^1.3.4",
-    "eslint": "^8.36.0"
+    "axios": "^1.3.4"
   },
   "devDependencies": {
+    "eslint": "^8.36.0",
     "jest": "^27.5.1"
   },
-  "description": "librería con Node.js para validar links de archivos markdown (.md)",
+  "description": "Library developed with Node.js to validate links of markdown files.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/alextina/DEV003-md-links.git"
@@ -41,10 +41,10 @@
     "node",
     "npm"
   ],
-  "author": "alextina",
+  "author": "Alejandra Castillo",
   "license": "ISC",
   "bin": {
-    "md-links": "cli.js"
+    "md-links": "src/cli.js"
   },
   "bugs": {
     "url": "https://github.com/alextina/DEV003-md-links/issues"

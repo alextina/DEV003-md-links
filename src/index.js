@@ -4,7 +4,7 @@ const {
   toAbsolute,
   isItFile,
   isItMd,
-  readMdFile,
+  readingFile,
   getAllFiles,
   getLinks,
   validateLinks,
@@ -26,7 +26,7 @@ const mdLinks = (path, options) => {
           reject(new Error(`The directory ${path} is empty`));
         } else {
           const allFilePaths = getAllFiles(absolutePath, arrayOfFiles = []);
-          let promises = []; // array vacio donde se guardaran las promesas
+          const promises = []; // array vacio donde se guardaran las promesas
           allFilePaths.forEach((filePath) => {
             // se iran agrenando las promesas a las que se le vaya aplicando mdLinks recursivamente
             promises.push(mdLinks(filePath, options));
@@ -34,7 +34,7 @@ const mdLinks = (path, options) => {
           // recorre el array de promesas y retorna su estado 
           Promise.allSettled(promises)
             .then((results) => {
-              let arrayResults = [];
+              const arrayResults = [];
               for (let i = 0; i < results.length; i++) {
                 const result = results[i];
                 // si el estaus del resultado de la promesa es fulfilled
@@ -47,13 +47,13 @@ const mdLinks = (path, options) => {
                 };
               };
               resolve(arrayResults);
-            })
+            });
         };
       } else {
         if (!isItMd(absolutePath)) {
           reject(new Error(`The file ${path} is not a Markdown file.`));
         } else {
-          readMdFile(absolutePath)
+          readingFile(absolutePath)
             .then((mdContent) => {
               const allLinks = getLinks(mdContent, absolutePath);
               if (allLinks.length === 0) {
@@ -67,7 +67,7 @@ const mdLinks = (path, options) => {
               };
             })
             .catch((error) => {
-              reject(new Error(error))
+              reject(new Error(error));
             });
         };
       };

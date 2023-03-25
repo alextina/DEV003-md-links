@@ -6,11 +6,11 @@ const {
   isItFile,
   isItMd,
   readDirectory,
-  readMdFile,
+  readingFile,
   getAllFiles,
   getLinks,
   validateLinks,
-} = require('../functions.js');
+} = require('../src/functions.js');
 
 // jest.mock('axios', () => jest.fn());
 jest.mock('axios');
@@ -84,23 +84,23 @@ describe('getAllFiles', () => {
       'para-pruebas\\con-archivos\\readme-prueba.md',
       'para-pruebas\\con-links.md',
       'para-pruebas\\sin-links.md'
-    ])
-  })
-})
+    ]);
+  });
+});
 
-describe('readMdFile', () => {
+describe('readingFile', () => {
   it('debería mostrar el contenido de un archivo', async () => {
-    const result = await readMdFile('para-pruebas\\con-archivos\\leyendo-md.md');
-    expect(result).toEqual('Este es el contenido del archivo markdown.')
+    const result = await readingFile('para-pruebas\\con-archivos\\leyendo-md.md');
+    expect(result).toEqual('Este es el contenido del archivo markdown.');
   });
   it('debería arrojar un error si intenta leer un directorio', () => {
-    expect(readMdFile('para-pruebas\\con-archivos')).rejects.toThrow('EISDIR: illegal operation on a directory, read')
+    expect(readingFile('para-pruebas\\con-archivos')).rejects.toThrow('EISDIR: illegal operation on a directory, read');
   });
-})
+});
 
 describe('getLinks', () => {
   it('debería retornar un array de links dentro del archivo markdown', () => {
-    return readMdFile('para-pruebas\\con-links.md')
+    return readingFile('para-pruebas\\con-links.md')
       .then((content) => {
         expect(getLinks(content, 'para-pruebas\\con-links.md')).toEqual([
           {
@@ -113,15 +113,15 @@ describe('getLinks', () => {
             text: 'error',
             file: 'para-pruebas\\con-links.md'
           }
-        ])
-      })
-  })
-})
+        ]);
+      });
+  });
+});
 
 describe('validateLinks', () => {
   beforeEach(() => {
-    axios.get.mockClear()
-  })
+    axios.get.mockClear();
+  });
   it('debería retornar la lista de todos los links validados con su status http con mensaje ok', async () => {
     axios.get.mockResolvedValueOnce(Promise.resolve({ status: 200, statusText: 'OK' }));
     const result = await validateLinks([
@@ -137,10 +137,10 @@ describe('validateLinks', () => {
         text: 'éxito',
         file: 'para-pruebas\\con-links.md',
         status: 200,
-        statusText: 'OK',
-        message: 'ok'
+        message: 'OK',
+        ok: 'ok'
       }
-    ])
+    ]);
 });
   it('debería retornar la lista de todos los links validados con su status http con mensaje fail', async () => {
     axios.get.mockResolvedValueOnce(Promise.reject({ response: { status: 404, statusText: 'Not found' }}));
@@ -157,9 +157,9 @@ describe('validateLinks', () => {
         text: 'error',
         file: 'para-pruebas\\con-links.md',
         status: 404,
-        statusText: 'Not found',
-        message: 'fail'
+        message: 'Not found',
+        ok: 'fail'
       }
-    ])
-  })
+    ]);
+  });
 });

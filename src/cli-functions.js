@@ -13,7 +13,7 @@ const unique = (links) => {
 
 // cantidad de links rotos (fail)
 const broken = (links) => {
-    const failMessage = links.filter(link => link.message === 'fail');
+    const failMessage = links.filter(link => link.ok === 'fail');
     const uniqueFails = new Set(failMessage);
     return uniqueFails.size;
 };

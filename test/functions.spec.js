@@ -122,42 +122,59 @@ describe('validateLinks', () => {
   beforeEach(() => {
     axios.get.mockClear();
   });
-  it('debería retornar la lista de todos los links validados con su status http con mensaje ok', async () => {
-    axios.get.mockResolvedValueOnce(Promise.resolve({ status: 200, statusText: 'OK' }));
-    const result = await validateLinks([
-      {
-        href: 'https://github.com/alextina',
-        text: 'éxito',
-        file: 'para-pruebas\\con-links.md'
-      }
-    ]);
+
+  it('cuando la petición es exitosa debería retornar los links validados con su status http con ok: ok', async () => {
+    const successfulResponse = { status: 200, statusText: 'OK' };
+    axios.get.mockResolvedValueOnce(Promise.resolve(successfulResponse));
+    const link = { href: 'https://siexiste.com', text: 'éxito', file: 'archivo.md' };
+
+    const result = await validateLinks([link]);
+
     expect(result).toEqual([
       {
-        href: 'https://github.com/alextina',
+        href: 'https://siexiste.com',
         text: 'éxito',
-        file: 'para-pruebas\\con-links.md',
+        file: 'archivo.md',
         status: 200,
-        message: 'OK',
+        statusMessage: 'OK',
         ok: 'ok'
       }
     ]);
-});
-  it('debería retornar la lista de todos los links validados con su status http con mensaje fail', async () => {
-    axios.get.mockResolvedValueOnce(Promise.reject({ response: { status: 404, statusText: 'Not found' }}));
-    const result = await validateLinks([
-      {
-        href: 'https://github.com/alextina/noexiste',
-        text: 'error',
-        file: 'para-pruebas\\con-links.md'
-      }
-    ]);
+  });
+
+  it('cuando la petición falla debería retornar los links validados con su status http con ok: fail', async () => {
+    const errorResponse = { response: { status: 404, statusText: 'Not found' } };
+    axios.get.mockResolvedValueOnce(Promise.reject(errorResponse));
+    const link = { href: 'https://noexiste.com', text: 'error', file: 'archivo.md' };
+
+    const result = await validateLinks([link]);
+
     expect(result).toEqual([
       {
-        href: 'https://github.com/alextina/noexiste',
+        href: 'https://noexiste.com',
         text: 'error',
-        file: 'para-pruebas\\con-links.md',
+        file: 'archivo.md',
         status: 404,
-        message: 'Not found',
+        statusMessage: 'Not found',
+        ok: 'fail'
+      }
+    ]);
+  });
+
+  it('cuando la petición falla debería retornar los links validados con su status http con status: 500', async () => {
+    const error = { request: 'error de red o servidor' };
+    axios.get.mockRejectedValue(error);
+    const link = { href: 'http://example.com', text: 'Ejemplo', file: 'archivo.md' };
+
+    const result = await validateLinks([link]);
+
+    expect(result).toEqual([
+      {
+        href: 'http://example.com',
+        text: 'Ejemplo',
+        file: 'archivo.md',
+        status: 500,
+        statusMessage: 'internal server error',
         ok: 'fail'
       }
     ]);

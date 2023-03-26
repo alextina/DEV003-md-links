@@ -82,7 +82,7 @@ const validateLinks = (allLinks) => {
                     text: link.text,
                     file: link.file,
                     status: response.status,
-                    message: response.statusText,
+                    statusMessage: response.statusText,
                     ok: 'ok',
                 };
             })
@@ -100,7 +100,7 @@ const validateLinks = (allLinks) => {
                   href: link.href,
                   file: link.file,
                   status: errorStatus,
-                  message: errorStatusText,
+                  statusMessage: errorStatusText,
                   ok: 'fail'
                 };
               });

@@ -15,7 +15,7 @@ const mdLinks = (path, options) => {
   return new Promise((resolve, reject) => {
     let absolutePath = path;
     if (!existPath(path)) {
-      reject(new Error(`${path} is an nvalid path.`));
+      reject(new Error(`${path} is an invalid path.`));
     } else {
       if (!isItAbsolute(path)) {
         absolutePath = toAbsolute(path);
@@ -26,18 +26,15 @@ const mdLinks = (path, options) => {
           reject(new Error(`The directory ${path} is empty`));
         } else {
           const allFilePaths = getAllFiles(absolutePath, arrayOfFiles = []);
-          const promises = []; // array vacio donde se guardaran las promesas
+          const promises = [];
           allFilePaths.forEach((filePath) => {
-            // se iran agrenando las promesas a las que se le vaya aplicando mdLinks recursivamente
             promises.push(mdLinks(filePath, options));
           });
-          // recorre el array de promesas y retorna su estado 
           Promise.allSettled(promises)
             .then((results) => {
               const arrayResults = [];
               for (let i = 0; i < results.length; i++) {
                 const result = results[i];
-                // si el estaus del resultado de la promesa es fulfilled
                 if (result.status === 'fulfilled') {
                   const res = result.value;
                   for (let j = 0; j < res.length; j++) {
